@@ -1,5 +1,6 @@
 package com.example.quizapp
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
@@ -21,6 +22,9 @@ class QuizQuestionActivity : AppCompatActivity(), View.OnClickListener {
     private var mCurrentPosition:Int=1
     private var mQuestionList:ArrayList<Question>?=null
     private var mSelectedOptionPosition:Int=0
+    private var userName:String?=null
+    private var mCorrectAns:Int=0
+    private var isSelected:Boolean=true
     
     private var progressBar:ProgressBar?=null
     private var tvProgress:TextView?=null
@@ -42,17 +46,19 @@ class QuizQuestionActivity : AppCompatActivity(), View.OnClickListener {
         tvProgress=findViewById(R.id.QuizProgress)
         tvQuestion=findViewById(R.id.question)
         flag=findViewById(R.id.flagImage)
-
+        userName=intent.getStringExtra(Constants.USER_NAME)
         optionOne=findViewById(R.id.optionOne)
         optionTwo=findViewById(R.id.optionTwo)
         optionThree=findViewById(R.id.optionThree)
         optionFour=findViewById(R.id.optionFour)
         submit=findViewById(R.id.btn_submit)
 
-        optionOne?.setOnClickListener(this)
-        optionTwo?.setOnClickListener(this)
-        optionThree?.setOnClickListener(this)
-        optionFour?.setOnClickListener(this)
+        if(isSelected){
+            optionOne?.setOnClickListener(this)
+            optionTwo?.setOnClickListener(this)
+            optionThree?.setOnClickListener(this)
+            optionFour?.setOnClickListener(this)
+        }
         submit?.setOnClickListener(this)
         mQuestionList = Constants.getQuestions(this)
         setQuestion()
@@ -63,6 +69,7 @@ class QuizQuestionActivity : AppCompatActivity(), View.OnClickListener {
 
     @SuppressLint("SetTextI18n")
     private fun setQuestion() {
+        isSelected=true
         defaultOptionView()
         val question: Question = mQuestionList!![mCurrentPosition - 1]
 
@@ -133,7 +140,7 @@ class QuizQuestionActivity : AppCompatActivity(), View.OnClickListener {
                 onSuccess = { result ->
                     val bitmap = (result as BitmapDrawable).bitmap
                     this.setImageBitmap(bitmap)
-                  Toast.makeText(applicationContext,"Image load successfully ", Toast.LENGTH_LONG).show()
+                 // Toast.makeText(applicationContext,"Image load successfully ", Toast.LENGTH_LONG).show()
                 },
                 onError = {
                     Toast.makeText(applicationContext,"Image load fail ",Toast.LENGTH_LONG).show()
@@ -168,24 +175,28 @@ class QuizQuestionActivity : AppCompatActivity(), View.OnClickListener {
         when(view?.id){
             R.id.optionOne ->{
                 optionOne?.let {
+                    if(isSelected)
                     selectedOptionView(it,1)
                 }
 
             }
             R.id.optionTwo ->{
                 optionTwo?.let {
+                    if(isSelected)
                     selectedOptionView(it,2)
                 }
 
             }
             R.id.optionThree ->{
                 optionThree?.let {
+                    if(isSelected)
                     selectedOptionView(it,3)
                 }
 
             }
             R.id.optionFour ->{
                 optionFour?.let {
+                    if(isSelected)
                     selectedOptionView(it,4)
                 }
 
@@ -195,23 +206,38 @@ class QuizQuestionActivity : AppCompatActivity(), View.OnClickListener {
                     mCurrentPosition++
                     when{
                         mCurrentPosition <= mQuestionList!!.size ->{
+
                             setQuestion()
+                        }
+                        else ->
+                        {
+                            val intent= Intent(this,ResultActivity::class.java)
+                            intent.putExtra(Constants.USER_NAME,userName)
+                            intent.putExtra(Constants.CORRECT_ANS,mCorrectAns)
+                            intent.putExtra(Constants.Total_Question,mQuestionList!!.size)
+                            startActivity(intent)
+                            finish()
                         }
                     }
                 }else
                 {
                     val question=mQuestionList?.get(mCurrentPosition -1)
                     if(question!!.correctAns !=mSelectedOptionPosition){
+
                         answerView(mSelectedOptionPosition,R.drawable.wrong_selection)
+                    }else{
+                        mCorrectAns++
                     }
                     answerView(question.correctAns,R.drawable.correct_selection)
 
-                    if(mCurrentPosition ==mQuestionList!!.size){
+                    if(mCurrentPosition == mQuestionList!!.size){
                         submit?.text="Finish"
                     }else
                     {
                         submit?.text="Go To Next Question"
                     }
+
+                    isSelected=false
                     mSelectedOptionPosition=0
                 }
 

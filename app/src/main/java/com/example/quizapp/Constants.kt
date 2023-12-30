@@ -9,6 +9,11 @@ import java.util.Locale
 object Constants {
 
 
+    const val USER_NAME:String="user_name"
+    const val Total_Question="total_question"
+    const val CORRECT_ANS="correct_ans"
+
+
     fun getFlagInfo(context: Context):ArrayList<CountryInfo>{
         val flag:ArrayList<CountryInfo> = ArrayList()
         val obj=JSONObject(getJSONFromAssets(context)!!)

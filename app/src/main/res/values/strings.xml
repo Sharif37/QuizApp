@@ -8,4 +8,8 @@
     <string name="qestion_will_set_here">Qestion will set here.</string>
     <string name="_0_5">0/5</string>
     <string name="submit">SUBMIT</string>
+    <string name="congratulations">Congratulations!!</string>
+    <string name="you_have_solve_5_out_of_5_questions">You have solve 5 out of 5 questions</string>
+    <string name="sharif">sharif</string>
+    <string name="finish">Finish</string>
 </resources>
